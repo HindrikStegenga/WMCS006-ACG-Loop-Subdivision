@@ -143,6 +143,42 @@ void Mesh::subdivideLoop(Mesh& mesh) {
     for (unsigned int k = 0; k < numVerts; k++) {
         newVertices[k].out = &newHalfEdges[ 2 * vertices[k].out->index ];
     }
+
+
+    for (HalfEdge& edge : newHalfEdges) {
+        if (not edge.next) {
+
+            // We need to repair this halfedge since it's on the boundary
+            HalfEdge* currentEdge = edge.twin;
+
+            // Iterate over the disc around edge.target and find the previous edge
+            for(int i = 0; i < edge.target->val; ++i) {
+                if (currentEdge->prev != nullptr) {
+                    currentEdge = currentEdge->prev->twin;
+                }
+            }
+            // Connect the edges, effectively creating (a) boundary loop(s) once all halfedges have been fixed.
+            edge.next = currentEdge;
+            currentEdge->prev = &edge;
+        }
+
+//        if (not edge.prev) {
+
+//            // We need to repair this halfedge since it's on the boundary
+//            HalfEdge* currentEdge = edge.twin;
+
+
+//            for(int i = 0; i < edge.target->val; ++i) {
+//                if (currentEdge->next != nullptr) {
+//                    currentEdge = currentEdge->next->twin;
+//                }
+//            }
+
+//            edge.prev = currentEdge;
+//            currentEdge->next = &edge;
+//        }
+    }
+
 }
 
 // ---
