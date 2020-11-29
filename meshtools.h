@@ -4,8 +4,6 @@
 #include "mesh.h"
 #include <QVector3D>
 
-
-
 QVector3D vertexPoint(HalfEdge* firstEdge);
 QVector3D edgePoint(HalfEdge* firstEdge);
 

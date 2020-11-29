@@ -145,38 +145,45 @@ void Mesh::subdivideLoop(Mesh& mesh) {
     }
 
 
+    QVector<HalfEdge*> boundaryEdges;
+    // Fix up all the edgeloops
     for (HalfEdge& edge : newHalfEdges) {
-        if (not edge.next) {
+        if (not edge.next && not edge.polygon) {
+            // Store it so we can later use curve subdivision
+            boundaryEdges.push_back(&edge);
 
             // We need to repair this halfedge since it's on the boundary
             HalfEdge* currentEdge = edge.twin;
 
             // Iterate over the disc around edge.target and find the previous edge
-            for(int i = 0; i < edge.target->val; ++i) {
-                if (currentEdge->prev != nullptr) {
-                    currentEdge = currentEdge->prev->twin;
-                }
+            while (currentEdge->prev != nullptr) {
+                currentEdge = currentEdge->prev->twin;
             }
+
             // Connect the edges, effectively creating (a) boundary loop(s) once all halfedges have been fixed.
             edge.next = currentEdge;
             currentEdge->prev = &edge;
         }
 
-//        if (not edge.prev) {
+    }
 
-//            // We need to repair this halfedge since it's on the boundary
-//            HalfEdge* currentEdge = edge.twin;
+    // We now need to generate new vertices etc. so we smooth the boundaries.
+    for (auto i = 0; i < boundaryEdges.size(); ++i) {
+        HalfEdge* edge = boundaryEdges[i];
 
+        QVector<HalfEdge*> boundaryLoop;
+        QVector<Vertex*> boundaryVertices;
+        boundaryLoop.push_back(edge);
+        boundaryVertices.push_back(edge->target);
 
-//            for(int i = 0; i < edge.target->val; ++i) {
-//                if (currentEdge->next != nullptr) {
-//                    currentEdge = currentEdge->next->twin;
-//                }
-//            }
-
-//            edge.prev = currentEdge;
-//            currentEdge->next = &edge;
-//        }
+        HalfEdge* currentEdge = edge->prev;
+        // Trace the current boundary loop
+        while (currentEdge != edge) {
+            boundaryLoop.push_back(currentEdge);
+            boundaryVertices.push_back(currentEdge->target);
+            currentEdge = currentEdge->prev;
+        }
+        qDebug() << boundaryLoop;
     }
 
 }
