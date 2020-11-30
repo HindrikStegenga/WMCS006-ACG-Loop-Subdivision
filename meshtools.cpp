@@ -171,19 +171,50 @@ void Mesh::subdivideLoop(Mesh& mesh) {
     for (auto i = 0; i < boundaryEdges.size(); ++i) {
         HalfEdge* edge = boundaryEdges[i];
 
-        QVector<HalfEdge*> boundaryLoop;
-        QVector<Vertex*> boundaryVertices;
-        boundaryLoop.push_back(edge);
-        boundaryVertices.push_back(edge->target);
+        QVector<HalfEdge*> boundaryLoopEdges;
+        QVector<Vertex*> boundaryLoopVertices;
+        boundaryLoopEdges.push_back(edge);
+        boundaryLoopVertices.push_back(edge->target);
 
         HalfEdge* currentEdge = edge->prev;
         // Trace the current boundary loop
         while (currentEdge != edge) {
-            boundaryLoop.push_back(currentEdge);
-            boundaryVertices.push_back(currentEdge->target);
+            boundaryLoopEdges.push_back(currentEdge);
+            boundaryLoopVertices.push_back(currentEdge->target);
             currentEdge = currentEdge->prev;
         }
-        qDebug() << boundaryLoop;
+
+        // Remove edges in boundary loop from the boundaryedges set.
+        for(int i = 0; i < boundaryLoopEdges.size(); ++i)
+            boundaryEdges.erase(std::find(boundaryEdges.begin(), boundaryEdges.end(), boundaryLoopEdges[i]));
+
+
+        //Generate new curve subdivision geometry for boundary loop
+        QVector<float> even = {1/8, 3/4, 1/8};
+        QVector<float> odd = {1/2, 1/2};
+
+        /*
+        for(int i = 0; i < boundaryLoopEdges.size(); ++i) {
+            // Even mask weights existing points.
+
+
+            // We need to move the vertex at target, so we need previous vertex and next vertex.
+            HalfEdge* currentEdge = boundaryLoopEdges[i];
+            Vertex* movedVertex = currentEdge->target;
+            Vertex* previousVertex = currentEdge->prev->target;
+            Vertex* nextVertex = currentEdge->next->target;
+            movedVertex->coords = ((1/8 * previousVertex->coords) +
+                                   (3/4 * movedVertex->coords) +
+                                   (1/8 * nextVertex->coords));
+
+            // We need to use odd mask for creating new vertices.
+
+
+
+            //newVertices.push_back(new Vertex());
+
+        }*/
+
     }
 
 }
@@ -198,8 +229,49 @@ QVector3D vertexPoint(HalfEdge* firstEdge) {
     HalfEdge* currentEdge;
     Vertex* currentVertex;
 
+
     currentVertex = firstEdge->twin->target;
     n = currentVertex->val;
+
+    Vertex* previousVertex = nullptr;
+    Vertex* nextVertex = nullptr;
+
+    // Figure out if we have a face without polygon of which our vertex is a part of.
+
+    currentEdge = firstEdge;
+    currentVertex = firstEdge->twin->target;
+
+    for(int k = 0; k < currentVertex->val; ++k) {
+        if (not currentEdge->polygon) {
+            //set previous
+            previousVertex = currentEdge->target;
+            currentEdge = currentEdge->twin;
+            for(int j = 0; j < currentVertex->val; ++j) {
+
+                if (not currentEdge->polygon) {
+                    nextVertex = currentEdge->twin->target;
+                    break;
+                } else {
+                    currentEdge = currentEdge->next->twin;
+                }
+
+            }
+
+            break;
+        } else {
+            currentEdge = currentEdge->prev->twin;
+        }
+    }
+
+    if(previousVertex != nullptr && nextVertex != nullptr) {
+        QVector3D coords;
+        coords = previousVertex->coords;
+        coords += 6 * currentVertex->coords;
+        coords += nextVertex->coords;
+        coords /= 8;
+        return coords;
+    }
+
 
     sumStarPts = QVector3D();
     sumFacePts = QVector3D();
@@ -232,14 +304,24 @@ QVector3D edgePoint(HalfEdge* firstEdge) {
     EdgePt = QVector3D();
     currentEdge = firstEdge;
 
-
     EdgePt = QVector3D();
-    currentEdge = firstEdge;
-    EdgePt  = 6.0 * currentEdge->target->coords;
-    EdgePt += 2.0 * currentEdge->next->target->coords;
-    EdgePt += 6.0 * currentEdge->twin->target->coords;
-    EdgePt += 2.0 * currentEdge->twin->next->target->coords;
-    EdgePt /= 16.0;
+    // If no polygon we are at a boundary.
+    if (currentEdge->twin->polygon == nullptr) {
+        // Boundary update rules
+
+        // Take 2 points and weigh them equally
+        EdgePt = 0.5 * currentEdge->target->coords;
+        EdgePt += 0.5 * currentEdge->twin->target->coords;
+
+    } else {
+        // Regular update rules 2 6 6 2
+
+        EdgePt  = 6.0 * currentEdge->target->coords;
+        EdgePt += 2.0 * currentEdge->next->target->coords;
+        EdgePt += 6.0 * currentEdge->twin->target->coords;
+        EdgePt += 2.0 * currentEdge->twin->next->target->coords;
+        EdgePt /= 16.0;
+    }
 
     return EdgePt;
 
