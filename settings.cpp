@@ -2,6 +2,10 @@
 
 Settings::Settings()
 {
+    reflectionLineX = 1;
+    reflectionLineY = 0;
+    reflectionLineZ = 0;
+
     reflectionLinesDensity = 30;
     drawReflectionLines = false;
     modelLoaded = false;

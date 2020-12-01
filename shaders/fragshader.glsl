@@ -7,6 +7,7 @@ layout (location = 2) in vec3 vertnormal_world_fs;
 
 uniform bool drawReflectionLines;
 uniform float sineScale;
+uniform vec3 testNormal;
 
 out vec4 fColor;
 
@@ -19,7 +20,7 @@ void main() {
   vec3 matspeccolour = vec3(1.0);
 
 
-  vec3 testNormal = vec3(1, 0, 0);
+
   if (drawReflectionLines) {
       float dotProduct = dot(normalize(vertnormal_world_fs), testNormal);
       float sine = sin(dotProduct * sineScale);

@@ -93,6 +93,7 @@ void MeshRenderer::draw() {
 
     shaderProg.setUniformValue("drawReflectionLines", settings->drawReflectionLines);
     shaderProg.setUniformValue("sineScale", (float)settings->reflectionLinesDensity);
+    shaderProg.setUniformValue("testNormal", (float)settings->reflectionLineX, (float)settings->reflectionLineY, (float)settings->reflectionLineZ);
 
     gl->glBindVertexArray(vao);
 

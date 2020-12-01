@@ -53,6 +53,21 @@ void MainWindow::on_SubdivSteps_valueChanged(int value) {
     ui->MainDisplay->updateBuffers( meshes[value] );
 }
 
+void MainWindow::on_reflectionLinesNormalX_valueChanged(int value) {
+    ui->MainDisplay->settings.reflectionLineX = value;
+    ui->MainDisplay->update();
+}
+
+void MainWindow::on_reflectionLinesNormalY_valueChanged(int value) {
+    ui->MainDisplay->settings.reflectionLineY = value;
+    ui->MainDisplay->update();
+}
+
+void MainWindow::on_reflectionLinesNormalZ_valueChanged(int value) {
+    ui->MainDisplay->settings.reflectionLineZ = value;
+    ui->MainDisplay->update();
+}
+
 void MainWindow::on_LoadOBJ_clicked() {
     loadOBJ();
     ui->LoadOBJ->setEnabled(true);

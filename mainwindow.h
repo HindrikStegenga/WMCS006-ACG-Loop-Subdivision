@@ -28,6 +28,10 @@ private slots:
     void on_drawReflectionLines_toggled(bool checked);
     void on_reflectionLinesDensity_valueChanged(int value);
 
+    void on_reflectionLinesNormalX_valueChanged(int value);
+    void on_reflectionLinesNormalY_valueChanged(int value);
+    void on_reflectionLinesNormalZ_valueChanged(int value);
+
     void on_LoadOBJ_clicked();
 
 private:

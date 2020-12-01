@@ -13,6 +13,11 @@ public:
     int reflectionLinesDensity;
     bool drawReflectionLines;
 
+    int reflectionLineX;
+    int reflectionLineY;
+    int reflectionLineZ;
+
+
     float FoV;
     float dispRatio;
     float rotAngle;
