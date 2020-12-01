@@ -2,6 +2,7 @@
 
 Settings::Settings()
 {
+    glPointSize = 8;
     reflectionLineX = 1;
     reflectionLineY = 0;
     reflectionLineZ = 0;

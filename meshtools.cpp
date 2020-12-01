@@ -145,13 +145,9 @@ void Mesh::subdivideLoop(Mesh& mesh) {
     }
 
 
-    QVector<HalfEdge*> boundaryEdges;
     // Fix up all the edgeloops
     for (HalfEdge& edge : newHalfEdges) {
-        if (not edge.next && not edge.polygon) {
-            // Store it so we can later use curve subdivision
-            boundaryEdges.push_back(&edge);
-
+        if (not edge.next && not edge.polygon) {           
             // We need to repair this halfedge since it's on the boundary
             HalfEdge* currentEdge = edge.twin;
 
@@ -164,59 +160,7 @@ void Mesh::subdivideLoop(Mesh& mesh) {
             edge.next = currentEdge;
             currentEdge->prev = &edge;
         }
-
     }
-
-    // We now need to generate new vertices etc. so we smooth the boundaries.
-    for (auto i = 0; i < boundaryEdges.size(); ++i) {
-        HalfEdge* edge = boundaryEdges[i];
-
-        QVector<HalfEdge*> boundaryLoopEdges;
-        QVector<Vertex*> boundaryLoopVertices;
-        boundaryLoopEdges.push_back(edge);
-        boundaryLoopVertices.push_back(edge->target);
-
-        HalfEdge* currentEdge = edge->prev;
-        // Trace the current boundary loop
-        while (currentEdge != edge) {
-            boundaryLoopEdges.push_back(currentEdge);
-            boundaryLoopVertices.push_back(currentEdge->target);
-            currentEdge = currentEdge->prev;
-        }
-
-        // Remove edges in boundary loop from the boundaryedges set.
-        for(int i = 0; i < boundaryLoopEdges.size(); ++i)
-            boundaryEdges.erase(std::find(boundaryEdges.begin(), boundaryEdges.end(), boundaryLoopEdges[i]));
-
-
-        //Generate new curve subdivision geometry for boundary loop
-        QVector<float> even = {1/8, 3/4, 1/8};
-        QVector<float> odd = {1/2, 1/2};
-
-        /*
-        for(int i = 0; i < boundaryLoopEdges.size(); ++i) {
-            // Even mask weights existing points.
-
-
-            // We need to move the vertex at target, so we need previous vertex and next vertex.
-            HalfEdge* currentEdge = boundaryLoopEdges[i];
-            Vertex* movedVertex = currentEdge->target;
-            Vertex* previousVertex = currentEdge->prev->target;
-            Vertex* nextVertex = currentEdge->next->target;
-            movedVertex->coords = ((1/8 * previousVertex->coords) +
-                                   (3/4 * movedVertex->coords) +
-                                   (1/8 * nextVertex->coords));
-
-            // We need to use odd mask for creating new vertices.
-
-
-
-            //newVertices.push_back(new Vertex());
-
-        }*/
-
-    }
-
 }
 
 // ---

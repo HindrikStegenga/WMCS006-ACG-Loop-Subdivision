@@ -5,6 +5,9 @@
 
 #include "renderer.h"
 #include "mesh.h"
+#include <memory>
+
+using std::unique_ptr;
 
 class MeshRenderer : public Renderer
 {
@@ -22,9 +25,16 @@ public:
     void updateBuffers(Mesh& m);
     void draw();
 
-private:
+    int computeClosestVertex();
 
+    QVector<QVector2D> transformFeedbackBuffer;
+    QVector2D lastPickedPoint;
+    bool pointUpdated = false;
+private:
+    int selectedVertex = -1;
+    int transformFeedbackBufferSize;
     GLuint vao;
+    GLuint tbo; //Transform feedback buffer
     GLuint meshCoordsBO, meshNormalsBO, meshIndexBO;
     unsigned int meshIBOSize;
     QOpenGLShaderProgram shaderProg;

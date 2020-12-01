@@ -37,7 +37,6 @@ public:
 
     void subdivideLoop(Mesh& mesh);
     void splitHalfEdges(QVector<Vertex>& newVertices, QVector<HalfEdge>& newHalfEdges);
-
 private:
     QVector<QVector3D> vertexCoords;
     QVector<QVector3D> vertexNormals;

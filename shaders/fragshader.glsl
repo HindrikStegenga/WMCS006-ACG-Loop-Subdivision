@@ -8,10 +8,18 @@ layout (location = 2) in vec3 vertnormal_world_fs;
 uniform bool drawReflectionLines;
 uniform float sineScale;
 uniform vec3 testNormal;
+uniform bool selectionMode;
 
 out vec4 fColor;
 
 void main() {
+
+  // selectionMode gives red fragments back.
+  if (selectionMode) {
+    fColor = vec4(1, 0, 0, 1);
+    return;
+  }
+
 
   vec3 lightpos = vec3(3.0, 0.0, 2.0)*10.0;
   vec3 lightcolour = vec3(1.0);

@@ -219,6 +219,38 @@ QGroupBox::title {
         <string>Reflection lines normal vector</string>
        </property>
       </widget>
+      <widget class="QLabel" name="SubdivLabel_4">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>440</y>
+         <width>191</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>GlPointSize:</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="glPointSize">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>470</y>
+         <width>181</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>20</number>
+       </property>
+       <property name="value">
+        <number>8</number>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>

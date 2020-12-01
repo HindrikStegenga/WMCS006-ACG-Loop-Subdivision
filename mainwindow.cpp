@@ -20,7 +20,7 @@ void MainWindow::loadOBJ() {
     meshes.squeeze();
     meshes.append( Mesh(&newModel) );
 
-    ui->MainDisplay->updateBuffers( meshes[0] );
+    ui->MainDisplay->updateBuffers( meshes[0]);
     ui->MainDisplay->settings.modelLoaded = true;
 
     ui->MainDisplay->update();
@@ -38,6 +38,11 @@ void MainWindow::on_drawReflectionLines_toggled(bool checked) {
 
 void MainWindow::on_reflectionLinesDensity_valueChanged(int value) {
     ui->MainDisplay->settings.reflectionLinesDensity = value;
+    ui->MainDisplay->update();
+}
+
+void MainWindow::on_glPointSize_valueChanged(int value) {
+    ui->MainDisplay->settings.glPointSize = value;
     ui->MainDisplay->update();
 }
 

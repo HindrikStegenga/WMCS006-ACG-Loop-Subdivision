@@ -32,6 +32,7 @@ protected:
 
     void mouseMoveEvent(QMouseEvent* Event);
     void mousePressEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
     void keyPressEvent(QKeyEvent* event);
 
@@ -51,6 +52,7 @@ private:
     bool dragging;
 
     MeshRenderer mr;
+    int lastMousePressX, lastMousePressY;
 
     Settings settings;
 

@@ -1,6 +1,7 @@
 #include "mainview.h"
 #include "math.h"
 #include <QLoggingCategory>
+#include <memory>
 
 MainView::MainView(QWidget *Parent) : QOpenGLWidget(Parent) {
     qDebug() << "✓✓ MainView constructor";
@@ -112,6 +113,7 @@ QVector2D MainView::toNormalizedScreenCoordinates(int x, int y) {
 
 void MainView::mouseMoveEvent(QMouseEvent* Event) {
     if(Event->buttons() == Qt::LeftButton) {
+
         QVector2D sPos = toNormalizedScreenCoordinates(Event->x(), Event->y());
         QVector3D newVec = QVector3D(sPos.x(), sPos.y(), 0.0);
 
@@ -128,6 +130,8 @@ void MainView::mouseMoveEvent(QMouseEvent* Event) {
         if(!dragging) {
             dragging = true;
             oldVec = newVec;
+            lastMousePressX = Event->x();
+            lastMousePressY = Event->y();
             return;
         }
 
@@ -151,9 +155,25 @@ void MainView::mouseMoveEvent(QMouseEvent* Event) {
     }
 }
 
+void MainView::mouseReleaseEvent(QMouseEvent* event) {
+    if(event->x() == lastMousePressX && event->y() == lastMousePressY) {
+        // Store point in NDC space.
+        auto vec = QVector2D(toNormalizedScreenCoordinates(event->x(), event->y()));
+        qDebug() << vec.x() << " - " << vec.y();
+        mr.lastPickedPoint = vec;
+        mr.pointUpdated = true;
+        settings.uniformUpdateRequired = true;
+
+        update();
+    }
+
+}
+
 
 void MainView::mousePressEvent(QMouseEvent* event) {
     setFocus();
+    lastMousePressX = event->x();
+    lastMousePressY = event->y();
 }
 
 void MainView::wheelEvent(QWheelEvent* event) {
