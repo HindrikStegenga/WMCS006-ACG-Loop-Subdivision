@@ -2,6 +2,8 @@
 
 Settings::Settings()
 {
+    reflectionLinesDensity = 30;
+    drawReflectionLines = false;
     modelLoaded = false;
     wireframeMode = true;
     uniformUpdateRequired = true;

@@ -10,6 +10,8 @@ public:
 
     bool modelLoaded;
     bool wireframeMode;
+    int reflectionLinesDensity;
+    bool drawReflectionLines;
 
     float FoV;
     float dispRatio;

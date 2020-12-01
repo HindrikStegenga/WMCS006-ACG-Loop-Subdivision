@@ -3,6 +3,10 @@
 
 layout (location = 0) in vec3 vertcoords_camera_fs;
 layout (location = 1) in vec3 vertnormal_camera_fs;
+layout (location = 2) in vec3 vertnormal_world_fs;
+
+uniform bool drawReflectionLines;
+uniform float sineScale;
 
 out vec4 fColor;
 
@@ -13,6 +17,19 @@ void main() {
 
   vec3 matcolour = vec3(0.53, 0.80, 0.87);
   vec3 matspeccolour = vec3(1.0);
+
+
+  vec3 testNormal = vec3(1, 0, 0);
+  if (drawReflectionLines) {
+      float dotProduct = dot(normalize(vertnormal_world_fs), testNormal);
+      float sine = sin(dotProduct * sineScale);
+      if (sine < 0.5) {
+          matcolour = vec3(1);
+      } else {
+          matcolour = vec3(0);
+      }
+
+  }
 
   float matambientcoeff = 0.2;
   float matdiffusecoeff = 0.3;
@@ -32,6 +49,9 @@ void main() {
   vec3 compcolour = min(1.0, matambientcoeff + matdiffusecoeff * diffusecoeff) * lightcolour * matcolour;
        compcolour += matspecularcoeff * specularcoeff * lightcolour * matspeccolour;
 
+
   fColor = vec4(compcolour, 1.0);
+
+
 
 }

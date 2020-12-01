@@ -31,6 +31,16 @@ void MainWindow::on_RotateDial_valueChanged(int value) {
     ui->MainDisplay->updateMatrices();
 }
 
+void MainWindow::on_drawReflectionLines_toggled(bool checked) {
+    ui->MainDisplay->settings.drawReflectionLines = checked;
+    ui->MainDisplay->update();
+}
+
+void MainWindow::on_reflectionLinesDensity_valueChanged(int value) {
+    ui->MainDisplay->settings.reflectionLinesDensity = value;
+    ui->MainDisplay->update();
+}
+
 void MainWindow::on_SubdivSteps_valueChanged(int value) {
     unsigned short k;
     for (k = meshes.size(); k < value + 1; k++) {
