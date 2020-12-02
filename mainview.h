@@ -36,6 +36,7 @@ protected:
     void wheelEvent(QWheelEvent* event);
     void keyPressEvent(QKeyEvent* event);
 
+    MeshRenderer mr;
 private:
     QOpenGLDebugLogger debugLogger;
 
@@ -51,7 +52,7 @@ private:
     QQuaternion rotationQuaternion;
     bool dragging;
 
-    MeshRenderer mr;
+
     int lastMousePressX, lastMousePressY;
 
     Settings settings;

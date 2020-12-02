@@ -26,6 +26,13 @@ void MainWindow::loadOBJ() {
     ui->MainDisplay->update();
 }
 
+void MainWindow::on_selectionMode_currentIndexChanged(int index) {
+    ui->MainDisplay->settings.selectionMode = index;
+    ui->MainDisplay->mr.selectedVertex = -1;
+    ui->MainDisplay->mr.pointUpdated = false;
+    ui->MainDisplay->update();
+}
+
 void MainWindow::on_RotateDial_valueChanged(int value) {
     ui->MainDisplay->settings.rotAngle = value;
     ui->MainDisplay->updateMatrices();

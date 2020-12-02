@@ -17,6 +17,7 @@ public:
     int reflectionLineY;
     int reflectionLineZ;
     int glPointSize;
+    int selectionMode;
 
 
     float FoV;

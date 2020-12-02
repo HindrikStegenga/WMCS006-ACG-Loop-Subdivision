@@ -26,16 +26,22 @@ public:
     void draw();
 
     int computeClosestVertex();
+    void computeClosestLineSegment();
 
+    QVector<unsigned int> lastIndexBuffer;
+    QVector<QVector3D> lastVertexBuffer;
+
+    QVector3D lineSegmentBuffer[2];
     QVector<QVector2D> transformFeedbackBuffer;
     QVector2D lastPickedPoint;
     bool pointUpdated = false;
-private:
     int selectedVertex = -1;
+private:
+
     int transformFeedbackBufferSize;
-    GLuint vao;
+    GLuint vao, lineSegmentVao;
     GLuint tbo; //Transform feedback buffer
-    GLuint meshCoordsBO, meshNormalsBO, meshIndexBO;
+    GLuint meshCoordsBO, meshNormalsBO, meshIndexBO, lineSegmentVBO;
     unsigned int meshIBOSize;
     QOpenGLShaderProgram shaderProg;
 

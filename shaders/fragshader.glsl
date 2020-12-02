@@ -9,10 +9,17 @@ uniform bool drawReflectionLines;
 uniform float sineScale;
 uniform vec3 testNormal;
 uniform bool selectionMode;
+uniform bool selectLine;
 
 out vec4 fColor;
 
 void main() {
+
+   // lineSelection gives orange fragments back
+   if(selectLine) {
+       fColor = vec4(1, 0.27, 0, 1);
+       return;
+   }
 
   // selectionMode gives red fragments back.
   if (selectionMode) {

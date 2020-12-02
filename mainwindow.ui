@@ -251,6 +251,44 @@ QGroupBox::title {
         <number>8</number>
        </property>
       </widget>
+      <widget class="QComboBox" name="selectionMode">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>530</y>
+         <width>181</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <item>
+        <property name="text">
+         <string>None</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Vertex</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Edge</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QLabel" name="SubdivLabel_5">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>510</y>
+         <width>191</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Selection mode:</string>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>

@@ -2,6 +2,7 @@
 
 Settings::Settings()
 {
+    selectionMode = 0;
     glPointSize = 8;
     reflectionLineX = 1;
     reflectionLineY = 0;

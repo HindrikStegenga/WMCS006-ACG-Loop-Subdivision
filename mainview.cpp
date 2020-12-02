@@ -159,7 +159,6 @@ void MainView::mouseReleaseEvent(QMouseEvent* event) {
     if(event->x() == lastMousePressX && event->y() == lastMousePressY) {
         // Store point in NDC space.
         auto vec = QVector2D(toNormalizedScreenCoordinates(event->x(), event->y()));
-        qDebug() << vec.x() << " - " << vec.y();
         mr.lastPickedPoint = vec;
         mr.pointUpdated = true;
         settings.uniformUpdateRequired = true;
