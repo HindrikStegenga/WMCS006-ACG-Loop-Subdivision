@@ -79,6 +79,7 @@ void MeshRenderer::initShaders() {
     const GLchar* feedbackVaryings[] = { "vertcoords_ndc" };
     gl->glTransformFeedbackVaryings(shaderProg.programId(), 1, feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
 
+
     shaderProg.link();
 
     uniModelViewMatrix = gl->glGetUniformLocation(shaderProg.programId(), "modelviewmatrix");
@@ -139,8 +140,8 @@ void MeshRenderer::updateBuffers(Mesh& m) {
 
     // Bind transform feedback buffer.
     gl->glBindBuffer(GL_ARRAY_BUFFER, tbo);
-    gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector2D) * vertexCoords.size(), nullptr, GL_STATIC_READ);
-    transformFeedbackBufferSize = sizeof(QVector2D) * vertexCoords.size();
+    gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QVector3D) * vertexCoords.size(), nullptr, GL_STATIC_READ);
+    transformFeedbackBufferSize = sizeof(QVector3D) * vertexCoords.size();
 
     meshIBOSize = polyIndices.size();
     lastIndexBuffer = polyIndices;
@@ -195,7 +196,7 @@ void MeshRenderer::draw() {
         // Enable transform feedback
         gl->glBeginTransformFeedback(GL_POINTS);
         // Draw into transform feedback
-        gl->glDrawArrays(GL_POINTS, 0, transformFeedbackBufferSize / sizeof(QVector2D));
+        gl->glDrawArrays(GL_POINTS, 0, transformFeedbackBufferSize / sizeof(QVector3D));
         // Disable transform feedback again.
         gl->glEndTransformFeedback();
 
@@ -203,7 +204,7 @@ void MeshRenderer::draw() {
         gl->glFlush();
 
         // Write back transform feedback buffer to CPU memory.
-        transformFeedbackBuffer.resize(transformFeedbackBufferSize / sizeof(QVector2D));
+        transformFeedbackBuffer.resize(transformFeedbackBufferSize / sizeof(QVector3D));
         gl->glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, 0, transformFeedbackBufferSize, transformFeedbackBuffer.data());
 
         // Compute closest vertex.
@@ -261,13 +262,23 @@ void MeshRenderer::draw() {
 }
 
 
+bool isClipped(QVector3D point) {
+
+    return point.x() < -1 || point.x() > 1 ||
+            point.y() < -1 || point.y() > 1 ||
+            point.z() < -1 || point.z() > 1;
+}
+
+
 // Computes closest line segment.
 // It is implemented as the smalled NDC space distance to the midpoint of a edge.
 void MeshRenderer::computeClosestLineSegment() {
     if (!pointUpdated) {
         return;
     }
-    float distanceFromLine = -1.0;
+    // Initial distance is max float
+    float distanceFromLine = 3.402823E+38;
+    bool isSet = false;
 
     QVector3D firstVertex;
     QVector3D secondVertex;
@@ -280,31 +291,42 @@ void MeshRenderer::computeClosestLineSegment() {
         auto v3 = transformFeedbackBuffer[lastIndexBuffer[i + 2]];
 
         // Compute distances to line segments.
-        float d1 = distanceToLineSegment(lastPickedPoint, v1, v2);
-        float d2 = distanceToLineSegment(lastPickedPoint, v2, v3);
-        float d3 = distanceToLineSegment(lastPickedPoint, v3, v1);
+        float d1 = distanceToLineSegment(lastPickedPoint, QVector2D(v1), QVector2D(v2));
+        float d2 = distanceToLineSegment(lastPickedPoint, QVector2D(v2), QVector2D(v3));
+        float d3 = distanceToLineSegment(lastPickedPoint, QVector2D(v3), QVector2D(v1));
 
         // Set shortest distance and store it
-        if (i == 0 || d1 < distanceFromLine) {
+        // We also need to check for clipping, since we don't want invisible vertices to affect our selection.
+        // I also chose to only allow fully visible edges. (i.e. both vertices must be within the visible space).
+        if (i == 0 || ((d1 < distanceFromLine) && !(isClipped(v1) || isClipped(v2)))) {
             distanceFromLine = d1;
             firstVertex = lastVertexBuffer[lastIndexBuffer[i]];
             secondVertex = lastVertexBuffer[lastIndexBuffer[i + 1]];
+
+            if ((d1 < distanceFromLine) && !(isClipped(v1) || isClipped(v2)))
+                isSet = true;
         }
-        if (d2 < distanceFromLine) {
+        if (d2 < distanceFromLine && !(isClipped(v2) || isClipped(v3))) {
             distanceFromLine = d2;
             firstVertex = lastVertexBuffer[lastIndexBuffer[i + 1]];
             secondVertex = lastVertexBuffer[lastIndexBuffer[i + 2]];
+            isSet = true;
         }
-        if (d3 < distanceFromLine) {
+        if (d3 < distanceFromLine && !(isClipped(v3) || isClipped(v1))) {
             distanceFromLine = d3;
             firstVertex = lastVertexBuffer[lastIndexBuffer[i + 2]];
             secondVertex = lastVertexBuffer[lastIndexBuffer[i]];
+            isSet = true;
         }
     }
 
     // These two points together form the closest line segment.
-    lineSegmentBuffer[0] = firstVertex;
-    lineSegmentBuffer[1] = secondVertex;
+    if (isSet) {
+        lineSegmentBuffer[0] = firstVertex;
+        lineSegmentBuffer[1] = secondVertex;
+    } else {
+        qDebug() << "Weirdness occured!";
+    }
 }
 
 // Computes the vertex index which is closest to the lastPickedPointlastPickedPoint.
@@ -313,11 +335,12 @@ int MeshRenderer::computeClosestVertex() {
         return -1;
     }
 
-    float distanceFromNDCSelectedPoint = -1.0;
+    // Initial distance is max float
+    float distanceFromNDCSelectedPoint = 3.402823E+38;
     int closestIndex = 0;
     // Effectively computes closest vertex in NDC space to the picket point (also in NDC space).
     for(int i = 0; i < transformFeedbackBuffer.size(); ++i) {
-        if (distanceFromNDCSelectedPoint == -1.0) {
+        if (i == 0) {
             distanceFromNDCSelectedPoint = abs(transformFeedbackBuffer[i].distanceToPoint(lastPickedPoint));
             closestIndex = i;
         } else {

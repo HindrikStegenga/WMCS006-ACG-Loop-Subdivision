@@ -54,7 +54,7 @@ void MainView::resizeGL(int newWidth, int newHeight) {
     settings.dispRatio = float(newWidth)/float(newHeight);
 
     settings.projectionMatrix.setToIdentity();
-    settings.projectionMatrix.perspective(settings.FoV, settings.dispRatio, 0.1f, 40.0f);
+    settings.projectionMatrix.perspective(settings.FoV, settings.dispRatio, settings.nearPlane, settings.farPlane);
 
     updateMatrices();
 }

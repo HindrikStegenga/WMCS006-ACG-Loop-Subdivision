@@ -32,7 +32,7 @@ public:
     QVector<QVector3D> lastVertexBuffer;
 
     QVector3D lineSegmentBuffer[2];
-    QVector<QVector2D> transformFeedbackBuffer;
+    QVector<QVector3D> transformFeedbackBuffer;
     QVector2D lastPickedPoint;
     bool pointUpdated = false;
     int selectedVertex = -1;

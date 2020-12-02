@@ -22,7 +22,7 @@ void MainWindow::loadOBJ() {
 
     ui->MainDisplay->updateBuffers( meshes[0]);
     ui->MainDisplay->settings.modelLoaded = true;
-
+    ui->MainDisplay->mr.selectedVertex = -1;
     ui->MainDisplay->update();
 }
 
@@ -62,7 +62,9 @@ void MainWindow::on_SubdivSteps_valueChanged(int value) {
     }
 
     //ui->MainDisplay->setSubdivisionLevel(int value);
+    ui->MainDisplay->mr.selectedVertex = -1;
     ui->MainDisplay->updateBuffers( meshes[value] );
+    ui->MainDisplay->update();
 }
 
 void MainWindow::on_reflectionLinesNormalX_valueChanged(int value) {

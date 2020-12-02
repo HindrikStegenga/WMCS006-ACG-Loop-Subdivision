@@ -19,7 +19,8 @@ public:
     int glPointSize;
     int selectionMode;
 
-
+    float nearPlane;
+    float farPlane;
     float FoV;
     float dispRatio;
     float rotAngle;

@@ -2,6 +2,8 @@
 
 Settings::Settings()
 {
+    nearPlane = 0.1f;
+    farPlane = 40.0f;
     selectionMode = 0;
     glPointSize = 8;
     reflectionLineX = 1;
@@ -16,5 +18,5 @@ Settings::Settings()
 
     rotAngle = 0.0;
     dispRatio = 16.0/9.0;
-    FoV = 120.0;
+    FoV = 90.0;
 }
