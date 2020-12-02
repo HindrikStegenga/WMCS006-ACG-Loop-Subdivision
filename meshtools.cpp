@@ -185,6 +185,8 @@ QVector3D vertexPoint(HalfEdge* firstEdge) {
     currentEdge = firstEdge;
     currentVertex = firstEdge->twin->target;
 
+    // Iterate around the vertex to find next and previous halfedges in case of a boundary edge.
+    // Effectively we do this for both directions, to find the previous and next boundary halfedges if any.
     for(int k = 0; k < currentVertex->val; ++k) {
         if (not currentEdge->polygon) {
             //set previous
@@ -206,7 +208,10 @@ QVector3D vertexPoint(HalfEdge* firstEdge) {
             currentEdge = currentEdge->prev->twin;
         }
     }
-
+    // In case of boundary edges we basically weight the vertices based on current, prev and next vertices.
+    // Thus we apply this: v0 --- v1 --- v2  with a weighting of 1/8 3/4 1.8. (normalized, v1 is the one we adjust)
+    // This ONLY happens when the vertices are at a boundary!
+    // Otherwise we apply warren's rules. (See below)
     if(previousVertex != nullptr && nextVertex != nullptr) {
         QVector3D coords;
         coords = previousVertex->coords;
@@ -253,7 +258,7 @@ QVector3D edgePoint(HalfEdge* firstEdge) {
     if (currentEdge->twin->polygon == nullptr) {
         // Boundary update rules
 
-        // Take 2 points and weigh them equally
+        // Take 2 points next to the new point and weigh them equally
         EdgePt = 0.5 * currentEdge->target->coords;
         EdgePt += 0.5 * currentEdge->twin->target->coords;
 
